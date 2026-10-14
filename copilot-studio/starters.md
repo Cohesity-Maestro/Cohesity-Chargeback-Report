@@ -1,0 +1,5 @@
+- Show backup chargeback at 0.05 USD per GiB per month
+- Who consumes the most backup storage?
+- Chargeback by cluster, billed on front-end data at 0.02 EUR per GiB
+- Cost per protection group for <cluster name>
+- Include cluster overhead and deleted groups in the chargeback

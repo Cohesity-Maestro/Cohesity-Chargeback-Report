@@ -5,14 +5,26 @@
 - Akshay Kumar, Dir, Solutions Architecture ([akshay.kumar2@cohesity.com](mailto:akshay.kumar2@cohesity.com))
 - Dave Stemerdink, Principal Sales Engineer ([david.stemerdink@cohesity.com](mailto:david.stemerdink@cohesity.com))
 
-A Claude skill that turns the Helios **Storage Consumption by Protection Groups** report into an interactive chargeback (showback) page: the monthly storage charge for every protection group across your clusters. It is published as a live, private Claude Artifact and refreshes every 4 hours.
+A Claude skill, also available as a Microsoft Copilot Studio agent, that turns the Helios **Storage Consumption by Protection Groups** report into an interactive chargeback (showback) page: the monthly storage charge for every protection group across your clusters. It is published as a live, private Claude Artifact and refreshes every 4 hours.
 
 You set a price per GiB and choose what to bill on; the totals, the share-by-cluster bar and the CSV update instantly in the page.
 
-- Skill: [`skill/Cohesity-Chargeback-Report/SKILL.md`](skill/Cohesity-Chargeback-Report/SKILL.md) (the full page template is embedded in it)
+- Claude skill: [`claude/Cohesity-Chargeback-Report/SKILL.md`](claude/Cohesity-Chargeback-Report/SKILL.md) (the full page template is embedded in it)
 - Output: one claude.ai **Artifact** titled `Cohesity Chargeback Report` (no static HTML file), with Copy as CSV and, where available, Download CSV
 - Refresh: scheduled task `cohesity-chargeback-report-refresh`, cron `0 */4 * * *`. A refresh costs two Helios calls because the report does the aggregation.
 - Data source: the **Helios MCP server** (`helios-mcp` connector), read-only.
+
+## Two Versions
+
+| | Claude skill | Microsoft Copilot Studio agent |
+|---|---|---|
+| Folder | [`claude/`](claude/Cohesity-Chargeback-Report/SKILL.md) | [`copilot-studio/`](copilot-studio/README.md) |
+| Output | Live, private Claude Artifact, refreshed every 4 hours | Answers in chat, with tables, on demand |
+| Helios access | `helios-mcp` connector, read-only | Helios MCP server added as a tool, read-only |
+| Setup | Install the skill in Claude (see Install below) | Paste `instructions.md`, upload `knowledge/` files, add the Helios MCP tool |
+| Screenshot | Below | Not applicable (chat answers) |
+
+The sections below describe the Claude skill unless a heading says Copilot Studio.
 
 ## What you get
 
@@ -56,7 +68,7 @@ Sizes use binary units (1 GiB = 2^30 bytes). `Charge = billed volume in GiB x pr
 
 ## Install
 
-1. Zip the folder `skill/Cohesity-Chargeback-Report` so `SKILL.md` is inside it.
+1. Zip the folder `claude/Cohesity-Chargeback-Report` so `SKILL.md` is inside it.
 2. Add it as a custom skill in Claude (Settings, Skills, upload) or copy it into your skills directory. The scheduled refresh runs the skill by name, so it must be installed for the 4-hour refresh to work.
 3. Confirm the Helios MCP connector is connected.
 
@@ -91,17 +103,28 @@ If `helios-mcp` is down or its token has expired, a scheduled refresh does not c
 - Hostnames appear as source names under each group; share the artifact accordingly.
 - The page lists the clusters present in the report; clusters registered but not in the report are named in the footnote.
 
-## Screenshots
+## Screenshots (Claude Version)
 
 ![Chargeback Report](docs/screenshots/chargeback-report.png)
 
 _Captured from the published artifact; cluster and group names are lab data._
+
+## Microsoft Copilot Studio Version
+
+The same logic as a Copilot Studio agent lives in [`copilot-studio/`](copilot-studio/README.md): `instructions.md` (agent instructions), `knowledge/` (two files to upload as Knowledge), `starters.md` (conversation starters) and step-by-step setup. It answers in chat and does not publish a page, schedule itself, or offer a cluster picker or CSV button. Add your Helios MCP server as a tool and enable only the read-only tools.
 
 ## Repository layout
 
 ```
 Cohesity-Chargeback-Report/
   README.md
-  docs/screenshots/chargeback-report.png
-  skill/Cohesity-Chargeback-Report/SKILL.md
+  claude/
+    Cohesity-Chargeback-Report/SKILL.md      Claude skill (install this folder in Claude)
+  copilot-studio/
+    README.md          setup steps
+    instructions.md    agent instructions
+    knowledge/         files to upload as Knowledge
+    starters.md        conversation starters
+  docs/
+    screenshots/chargeback-report.png
 ```
