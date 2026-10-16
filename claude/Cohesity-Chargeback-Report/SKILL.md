@@ -64,6 +64,14 @@ If the report is unavailable (for example the user's role cannot run reports), s
 | `{{DATA_JSON}}` | `{"registered":12,"rows":[...]}` as valid JSON with every `</` written as `<\/` |
 | `{{SCOPE_NOTE}}` | footnote text, HTML-escaped: clusters registered but absent from the report, row-count check result, any cap |
 
+## Large Helios results (do this in the main session)
+
+The `reporting-get-report-preview` result for `storage-consumption-group` usually exceeds the inline limit and is saved to a file such as `/var/folders/.../projects/session/<sessionId>/tool-results/<file>.txt`. That host path is not readable from the Linux shell or from subagents, so a delegated run cannot process the data. Collect and process the data yourself, in the main session:
+
+1. Translate a saved path for bash: replace the prefix up to `/projects/` with `/sessions/<session>/mnt/.claude/projects/` (find the file with `find /sessions -name '<file>.txt'`). Scheduled-task sessions have their own session id.
+2. Process the file with python, check the row count and the resiliency total against component 401, and write the rows to a JSON file before you build the page.
+3. A result that is small enough to come back inline cannot be read from bash. Compute its figures directly.
+
 ## Manual refresh
 
 The template has a **Refresh from Helios** button. A published page cannot call the Helios connector itself, so the second button copies the command `Run the Cohesity-Chargeback-Report skill to refresh this report from live Helios data`; paste it into Claude and it republishes the same artifact. Keep the button in every rebuild.
